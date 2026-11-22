@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>JOY Beauty Salon — AR Experience</title>
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+  <style>
+    *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#160f12;color:#fff}
+    #intro{position:fixed;z-index:5;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;background:radial-gradient(circle at 50% 25%,#573b32,#160f12 70%)}
+    .panel{max-width:430px;width:100%;padding:28px 22px;border:1px solid #d9b66b;border-radius:22px;background:#24191de8;box-shadow:0 0 35px #d6a94b44}
+    h1{color:#f4d48a;margin:0 0 8px;font-size:34px} p{line-height:1.5;color:#f4e8d7}
+    button,.link{display:inline-block;border:0;border-radius:999px;padding:14px 22px;margin:7px;background:linear-gradient(90deg,#f5c86c,#e98b9d);color:#24151a;font-weight:bold;text-decoration:none;font-size:16px}
+    #hint{position:fixed;z-index:4;top:12px;left:12px;right:12px;text-align:center;padding:10px;border-radius:12px;background:#20171ddd;color:#ffe8b2}
+    a-scene{position:fixed!important;inset:0}
+  </style>
+</head>
+<body>
+  <div id="intro"><div class="panel">
+    <h1>JOY Beauty Salon</h1><p>Welcome to our AR beauty experience.<br>Scan our printed JOY salon card to reveal services and booking links.</p>
+    <p><b>Before publishing:</b> compile <code>joy-promo.png</code> into <code>targets.mind</code> using the free MindAR Target Compiler, then add the file here.</p>
+    <button onclick="startAR()">START AR</button>
+    <p style="font-size:12px">Camera access requires HTTPS and your permission.</p>
+  </div></div>
+  <div id="hint" hidden>Point your camera at the JOY Beauty Salon promotional card.</div>
+  <a-scene mindar-image="imageTargetSrc: ./targets.mind; autoStart: false; uiLoading: no; uiScanning: no; uiError: no;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+    <a-assets>
+      <a-image id="promo" src="./joy-promo.png"></a-image>
+    </a-assets>
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+    <a-entity mindar-image-target="targetIndex: 0">
+      <a-plane src="#promo" position="0 0 0" height="0.9" width="1.35" material="transparent: true; opacity: 0.98"></a-plane>
+      <a-entity position="0 -0.62 0.03" rotation="0 0 0">
+        <a-plane width="1.25" height="0.26" color="#29191c" material="opacity:0.94; transparent:true" position="0 0 0"></a-plane>
+        <a-text value="JOY BEAUTY SALON  •  LOOK GOOD. FEEL AMAZING." align="center" color="#f6d68d" width="1.55" position="0 0.04 0.01"></a-text>
+      </a-entity>
+    </a-entity>
+  </a-scene>
+  <script>
+    async function startAR(){
+      const intro=document.getElementById('intro');
+      const scene=document.querySelector('a-scene');
+      if(!location.protocol.startsWith('http')){alert('Please open this page from an HTTPS website (for example GitHub Pages).');return;}
+      if(!await fetch('./targets.mind').then(r=>r.ok).catch(()=>false)){alert('Setup still needed: create targets.mind from joy-promo.png using the MindAR Target Compiler, then upload it beside index.html.');return;}
+      intro.style.display='none'; document.getElementById('hint').hidden=false;
+      scene.systems['mindar-image-system'].start();
+    }
+  </script>
+</body>
+</html>
