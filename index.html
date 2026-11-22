@@ -1,50 +1,155 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <meta name="theme-color" content="#1b1015">
   <title>JOY Beauty Salon — AR Experience</title>
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
   <style>
-    *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#160f12;color:#fff}
-    #intro{position:fixed;z-index:5;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;background:radial-gradient(circle at 50% 25%,#573b32,#160f12 70%)}
-    .panel{max-width:430px;width:100%;padding:28px 22px;border:1px solid #d9b66b;border-radius:22px;background:#24191de8;box-shadow:0 0 35px #d6a94b44}
-    h1{color:#f4d48a;margin:0 0 8px;font-size:34px} p{line-height:1.5;color:#f4e8d7}
-    button,.link{display:inline-block;border:0;border-radius:999px;padding:14px 22px;margin:7px;background:linear-gradient(90deg,#f5c86c,#e98b9d);color:#24151a;font-weight:bold;text-decoration:none;font-size:16px}
-    #hint{position:fixed;z-index:4;top:12px;left:12px;right:12px;text-align:center;padding:10px;border-radius:12px;background:#20171ddd;color:#ffe8b2}
-    a-scene{position:fixed!important;inset:0}
+    *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:Arial,sans-serif;background:#160f12;color:#fff}
+    #intro{position:fixed;z-index:20;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:22px;background:radial-gradient(circle at 50% 20%,#674b3c,#160f12 72%)}
+    .panel{max-width:440px;width:100%;padding:28px 22px;border:1px solid #d9b66b;border-radius:24px;background:#24191df2;box-shadow:0 0 38px #d6a94b44}
+    h1{color:#f4d48a;margin:0 0 8px;font-size:34px}.sub{line-height:1.5;color:#f4e8d7}
+    button{border:1px solid #f3d18a;border-radius:999px;padding:12px 16px;background:linear-gradient(100deg,#f5c86c,#e98b9d);color:#24151a;font-weight:800;font-size:14px;cursor:pointer}
+    #start{padding:15px 28px;font-size:16px;margin-top:8px}
+    #hint{position:fixed;z-index:8;top:12px;left:12px;right:12px;text-align:center;padding:10px 14px;border:1px solid #d9b66b88;border-radius:14px;background:#20171de8;color:#ffe8b2;font-size:13px;pointer-events:none}
+    #experience{position:fixed;z-index:9;left:12px;right:12px;bottom:12px;display:none;max-width:620px;margin:auto;padding:14px;border:1px solid #e6c477aa;border-radius:20px;background:linear-gradient(145deg,#24191df2,#38232deF);box-shadow:0 8px 35px #0009;backdrop-filter:blur(12px)}
+    #experience h2{margin:0 0 4px;color:#f5d58e;font-size:20px;text-align:center}#experience .tagline{text-align:center;font-size:12px;color:#f4e8d7;margin-bottom:10px}
+    .services{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.services button{border-radius:12px;padding:10px 5px;background:#ffffff12;color:#ffe7b1;border-color:#d9b66b88;font-size:12px}
+    .services button.active{background:linear-gradient(100deg,#f5c86c,#e98b9d);color:#24151a}
+    #serviceInfo{min-height:36px;text-align:center;font-size:12px;line-height:1.4;color:#f8ead4;padding:9px 3px 6px}
+    .actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.actions button{padding:12px 8px}.actions .secondary{background:#ffffff12;color:#ffe7b1;border-color:#d9b66b88}
+    #toast{position:fixed;z-index:30;left:16px;right:16px;bottom:230px;margin:auto;max-width:420px;padding:12px 15px;border-radius:12px;background:#2a1b20;color:#ffe8b2;border:1px solid #d9b66b;text-align:center;font-size:13px;display:none}
+    a-scene{position:fixed!important;inset:0;z-index:1}
+    @media(min-width:700px){#experience{bottom:22px}.services{grid-template-columns:repeat(5,1fr)}}
   </style>
 </head>
 <body>
   <div id="intro"><div class="panel">
-    <h1>JOY Beauty Salon</h1><p>Welcome to our AR beauty experience.<br>Scan our printed JOY salon card to reveal services and booking links.</p>
-    <p><b>Before publishing:</b> compile <code>joy-promo.png</code> into <code>targets.mind</code> using the free MindAR Target Compiler, then add the file here.</p>
-    <button onclick="startAR()">START AR</button>
-    <p style="font-size:12px">Camera access requires HTTPS and your permission.</p>
+    <h1>JOY Beauty Salon</h1>
+    <p class="sub">Welcome to our interactive AR beauty experience.<br>Scan the JOY promotional card to reveal our salon services.</p>
+    <button id="start">START AR</button>
+    <p style="font-size:12px;color:#d9c7b8;margin-bottom:0">Allow camera access when your browser asks. Use HTTPS and good lighting.</p>
   </div></div>
-  <div id="hint" hidden>Point your camera at the JOY Beauty Salon promotional card.</div>
+
+  <div id="hint" hidden>Move your camera slowly and point it at the JOY Beauty Salon card.</div>
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <section id="experience" aria-label="JOY Beauty Salon interactive menu">
+    <h2>JOY Beauty Salon</h2>
+    <div class="tagline">LOOK GOOD · FEEL AMAZING</div>
+    <div class="services">
+      <button class="service active" data-service="Haircut">✂ Haircut</button>
+      <button class="service" data-service="Hair Color">✦ Hair Color</button>
+      <button class="service" data-service="Hair Treatment">♡ Hair Treatment</button>
+      <button class="service" data-service="Hair Styling">❀ Hair Styling</button>
+      <button class="service" data-service="Nail Care">✧ Nail Care</button>
+    </div>
+    <div id="serviceInfo">Fresh cuts and styles tailored to you. Tap another service to explore.</div>
+    <div class="actions">
+      <button id="book">BOOK NOW</button>
+      <button id="social" class="secondary">SOCIAL MEDIA</button>
+    </div>
+  </section>
+
   <a-scene mindar-image="imageTargetSrc: ./targets.mind; autoStart: false; uiLoading: no; uiScanning: no; uiError: no;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
-    <a-assets>
-      <a-image id="promo" src="./joy-promo.png"></a-image>
-    </a-assets>
+    <a-assets><a-image id="promo" src="./joy-promo.png"></a-image></a-assets>
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
-    <a-entity mindar-image-target="targetIndex: 0">
+    <a-entity id="trackedCard" mindar-image-target="targetIndex: 0">
+      <!-- Keep the tracked artwork exactly aligned with the compiled target image. -->
       <a-plane src="#promo" position="0 0 0" height="0.9" width="1.35" material="transparent: true; opacity: 0.98"></a-plane>
-      <a-entity position="0 -0.62 0.03" rotation="0 0 0">
-        <a-plane width="1.25" height="0.26" color="#29191c" material="opacity:0.94; transparent:true" position="0 0 0"></a-plane>
-        <a-text value="JOY BEAUTY SALON  •  LOOK GOOD. FEEL AMAZING." align="center" color="#f6d68d" width="1.55" position="0 0.04 0.01"></a-text>
+      <!-- Lightweight gold hologram accents anchored to the recognized card. -->
+      <a-torus position="0 0.56 0.03" rotation="0 0 0" radius="0.48" radius-tubular="0.008" material="color:#f4cf78; emissive:#8a5b1c; emissiveIntensity:0.7"></a-torus>
+      <a-text value="JOY BEAUTY SALON" align="center" color="#ffe4a1" width="2.2" position="0 0.72 0.04" side="double"></a-text>
+      <a-text value="LOOK GOOD  •  FEEL AMAZING" align="center" color="#fff2d1" width="1.8" position="0 -0.56 0.04" side="double"></a-text>
+      <!-- Stylized 3D salon mascot made from A-Frame primitives. -->
+      <a-entity id="mascot" position="0.79 0.05 0.12" scale="0.34 0.34 0.34">
+        <a-sphere position="0 0.78 0" radius="0.25" material="color:#f2c6a5; roughness:0.8"></a-sphere>
+        <a-sphere position="0 0.91 -0.035" radius="0.265" scale="1 0.72 0.9" material="color:#3a211e; roughness:1"></a-sphere>
+        <a-sphere position="-0.105 0.79 0.218" radius="0.025" material="color:#24151a"></a-sphere>
+        <a-sphere position="0.105 0.79 0.218" radius="0.025" material="color:#24151a"></a-sphere>
+        <a-cylinder position="0 0.39 0" radius="0.19" height="0.48" material="color:#21171b; roughness:0.7"></a-cylinder>
+        <a-torus position="0 0.56 0.01" radius="0.16" radius-tubular="0.018" material="color:#e8bd62; metalness:0.7"></a-torus>
+        <a-cylinder position="-0.23 0.39 0" radius="0.055" height="0.38" rotation="0 0 -28" material="color:#f2c6a5"></a-cylinder>
+        <a-cylinder position="0.23 0.39 0" radius="0.055" height="0.38" rotation="0 0 28" material="color:#f2c6a5"></a-cylinder>
+        <a-cylinder position="-0.09 0.08 0" radius="0.065" height="0.3" material="color:#282027"></a-cylinder>
+        <a-cylinder position="0.09 0.08 0" radius="0.065" height="0.3" material="color:#282027"></a-cylinder>
+        <a-sphere position="0 1.09 0" radius="0.07" material="color:#e8bd62; metalness:0.7"></a-sphere>
       </a-entity>
     </a-entity>
   </a-scene>
+
   <script>
-    async function startAR(){
-      const intro=document.getElementById('intro');
-      const scene=document.querySelector('a-scene');
-      if(!location.protocol.startsWith('http')){alert('Please open this page from an HTTPS website (for example GitHub Pages).');return;}
-      if(!await fetch('./targets.mind').then(r=>r.ok).catch(()=>false)){alert('Setup still needed: create targets.mind from joy-promo.png using the MindAR Target Compiler, then upload it beside index.html.');return;}
-      intro.style.display='none'; document.getElementById('hint').hidden=false;
-      scene.systems['mindar-image-system'].start();
+    // Add the salon's real WhatsApp number and social URLs here when ready.
+    // Use international digits only for WhatsApp, e.g. 639XXXXXXXXX (no + or spaces).
+    const SALON_WHATSAPP = '';
+    const SALON_FACEBOOK = '';
+    const SALON_INSTAGRAM = '';
+    const SALON_TIKTOK = '';
+
+    const intro = document.getElementById('intro');
+    const scene = document.querySelector('a-scene');
+    const target = document.getElementById('trackedCard');
+    const hint = document.getElementById('hint');
+    const experience = document.getElementById('experience');
+    const toast = document.getElementById('toast');
+    let toastTimer;
+
+    function notify(message){
+      toast.textContent = message;
+      toast.style.display = 'block';
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(()=>toast.style.display='none', 3600);
     }
+
+    document.getElementById('start').addEventListener('click', async ()=>{
+      if(!location.protocol.startsWith('http')){notify('Please open this experience from your HTTPS GitHub Pages website.');return;}
+      try {
+        const check = await fetch('./targets.mind', {cache:'no-store'});
+        if(!check.ok) throw new Error('targets.mind is missing from the website root.');
+        intro.style.display='none';
+        hint.hidden=false;
+        await scene.systems['mindar-image-system'].start();
+      } catch(error) {
+        intro.style.display='flex';
+        notify('Could not start AR: '+error.message+' Check that targets.mind is uploaded beside index.html.');
+      }
+    });
+
+    target.addEventListener('targetFound', ()=>{
+      hint.textContent='JOY card detected! Explore the salon menu below.';
+      experience.style.display='block';
+    });
+    target.addEventListener('targetLost', ()=>{
+      hint.textContent='Card not visible. Point your camera at the JOY promotional card again.';
+      experience.style.display='none';
+    });
+
+    const descriptions = {
+      'Haircut':'Fresh cuts and styles tailored to your look.',
+      'Hair Color':'Refresh your look with a beautiful new hair color.',
+      'Hair Treatment':'Give your hair extra care, softness and shine.',
+      'Hair Styling':'Get ready for everyday looks or special occasions.',
+      'Nail Care':'Pamper your hands and nails with a polished finish.'
+    };
+    document.querySelectorAll('.service').forEach(button=>button.addEventListener('click',()=>{
+      document.querySelectorAll('.service').forEach(item=>item.classList.remove('active'));
+      button.classList.add('active');
+      document.getElementById('serviceInfo').textContent=descriptions[button.dataset.service];
+    }));
+
+    document.getElementById('book').addEventListener('click',()=>{
+      if(!SALON_WHATSAPP){notify('Booking is ready to connect. Add the salon WhatsApp number in index.html to activate BOOK NOW.');return;}
+      const message=encodeURIComponent('Hello JOY Beauty Salon! I would like to book an appointment.');
+      window.open('https://wa.me/'+SALON_WHATSAPP+'?text='+message,'_blank','noopener');
+    });
+    document.getElementById('social').addEventListener('click',()=>{
+      const links=[SALON_FACEBOOK,SALON_INSTAGRAM,SALON_TIKTOK].filter(Boolean);
+      if(!links.length){notify('Social links are ready to add. Send your salon Facebook, Instagram or TikTok links to activate them.');return;}
+      window.open(links[0],'_blank','noopener');
+    });
   </script>
 </body>
 </html>
